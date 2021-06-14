@@ -14,11 +14,11 @@ SmallFont - 6x8
 MediumNumbers - 12x16
 BigNumbers - 14x24
 */
-#include <OLED_I2C.h>
+#include <OLED.h>
 #include <max6675.h>
 #include <TimerOne.h>
 #include <math.h>
-#include <MedianFilter.h>
+//#include <MedianFilter.h>
 
 #define SERIAL 1 //debug serial
 #define MAX_BOILER	60//psi
@@ -42,10 +42,10 @@ int thermoCLK = 12;
 int TbCS = 11;//boiler
 int TeCS = 13;//e61
 
-MAX6675 Tboiler(thermoCLK, TbCS, thermoDO);
+//MAX6675 Tboiler(thermoCLK, TbCS, thermoDO);
 MAX6675 Te61(thermoCLK, TeCS, thermoDO);
 OLED  display(SDA, SCL);
-MedianFilter Te_filter(10);
+//MedianFilter Te_filter(10);
 
 float Tb=-99.9;
 float Te=-99.9;
