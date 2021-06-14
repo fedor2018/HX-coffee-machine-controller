@@ -1,0 +1,13 @@
+DIGMESA #FHKSC 974-9501-A180.
+Turbine Flow sensor for vending systems that use vibratory water pumps. 
+NPN Normally Open transistor switch with internal 1.2K Pull-up. 
+Output low upon detection. 
+PBT Plastic Case, NSF/CE Approved.
+Power: 4-20VDC.
+Output: Square wave, 20mA max Sink, 2016 Pulse/liter.
+Detection Range: .1-.57 L/min.
+Pressure Range:-14 to +4.35 PSI.
+Internal orifice: 1.2mm.
+3-pin header, 0.156" (Pancon156MLSS).
+Fittings for 5mm I/D plastic tubing.
+1.6" diameter x 0.95" plastic body. 

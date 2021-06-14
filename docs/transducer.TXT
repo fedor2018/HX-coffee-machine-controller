@@ -1,0 +1,57 @@
+ 60 psi
+60->4,082757660991858
+ àòì     psi              T*C     V      Code
+0,5   7,347974700196106  80.86   0,49    
+0,8   11,75675952031377  92.99   0,78
+1     14,69594940039221  99.09   0,98
+1,5   22,04392410058832  110.79  1,47
+2     29,39189880078442  119.62  1,96
+
+(4.5-0.5)/60
+
+Input: 0-60 psi(Gauge Pressure);
+Output: 0.5-4.5V linear voltage output. 0 psi outputs 0.5V, 30 psi outputs 2.5V, 60 psi outputs 4.5V.
+Accuracy: +/-0.5%FS;
+Thread: 1/8” NPT;
+Wiring Connector: Packard plug-in unit is included;
+Wiring: Red: +5V; Black: ground; Green: signal output;
+Overload Capacity: 2-4 times;
+Working Temperature: -40—+120?C;
+Compensation Temperature: -20—+80?C;
+Protection Class: IP67;
+Pressure Medium: The gas and liquid which is compatible with 316L stainless steel;
+Load Resistance: ?(supply power-6.5V/0.02A)?;
+Long-term stability: Less than 0.1%FS/year;
+Temperature Effect on Zero: Typical:0.02%FS/?C; Maximum:0.05%FS/?C;
+Temperature Effect on Sensitivity: Typical:0.02%FS/?C; Maximum:0.05%FS/?C;
+Shock Resistance: 1000g;
+Anti-Shock: ?+/-0.01%FS(X,Y,Z axes, 200Hz/g);
+Response Time: ?1ms;
+Insulation Resistance: >100m?  500VDC;
+Weight: 55 g
+Explosion-proof Class: ExiaTTCT6;
+Electromagnetism Compatibility: EN50051-1.
+
+ 300psi
+Input: 0-300 psi(Gauge Pressure);
+Output: 0.5-4.5V linear voltage output. 0 psi outputs 0.5V, 150 psi outputs 2.5V, 300 psi outputs 4.5V.
+Accuracy: +/-0.5%FS;
+Thread: 1/8” NPT;
+Wiring Connector: Packard plug-in unit is included;
+Wiring: Red: +5V; Black: ground; Green: signal output;
+Overload Capacity: 2-4 times;
+Working Temperature: -40—+120?C;
+Compensation Temperature: -20—+80?C;
+Protection Class: IP67;
+Pressure Medium: The gas and liquid which is compatible with 316L stainless steel;
+Load Resistance: ? (supply power-6.5V/0.02A)?;
+Long-term stability: Less than 0.1%FS/year;
+Temperature Effect on Zero: Typical:0.02%FS/?C; Maximum:0.05%FS/?C;
+Temperature Effect on Sensitivity: Typical:0.02%FS/?C; Maximum:0.05%FS/?C;
+Shock Resistance: 1000g;
+Anti-Shock: ?+/-0.01%FS(X,Y,Z axes, 200Hz/g);
+Response Time: ?1ms;
+Insulation Resistance: >100m?  500VDC;
+Weight: 55 g
+Explosion-proof Class: ExiaTTCT6;
+Electromagnetism Compatibility: EN50051-1.
