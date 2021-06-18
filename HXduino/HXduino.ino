@@ -14,43 +14,49 @@ SmallFont - 6x8
 MediumNumbers - 12x16
 BigNumbers - 14x24
 */
+#include <Wire.h>
 #include <OLED.h>
 #include <max6675.h>
-#include <TimerOne.h>
 #include <math.h>
-//#include <MedianFilter.h>
+#include <MedianFilter.h>
+#include <ESP8266TimerInterrupt.h>
+#include <ESP8266_ISR_Timer.h>
+#include <ESP8266WiFi.h>
+#include <ESP8266mDNS.h>
+#include <WiFiUdp.h>
+#include <ArduinoOTA.h>
 
-#define SERIAL 1 //debug serial
+//#define SERIAL 1 //debug serial
 #define MAX_BOILER	60//psi
-#define MAX_WATER 300	//psi
+//#define MAX_WATER 300	//psi
 #define Q_WATER	2016 	//Pulse/liter
 #define P_REG	0.8		//Bar -> 93*C
 
-#define VIN 5//Vcc
-#define PUMP_ON  2	//int 0
-#define PRESS_ON 3//int 1
-#define SSR_PIN  4 //heater off
-#define PBEEP    5 	//buzzer
-#define PBOILER  A0//Pboiler 
-#define PWATER	 A1//Pwater
-#define LWATER	 6	//Lwater
+#define VIN  (220+51)/51 //1v->5v
+#define PUMP_ON  13 //gpio13
+#define PRESS_ON 1 //gpio? tx
+#define SSR_PIN  0 //gpio0
+#define PBEEP    15 	//gpio15
+#define PBOILER  A0//adc 
+#define LWATER	 2	//gpio2
 #define SSR_ON LOW
 #define SSR_OFF HIGH
+#define SDA 4
+#define SCL 5 
+#define LED 3 //rx
 
-int thermoDO = 10;
-int thermoCLK = 12;
-int TbCS = 11;//boiler
-int TeCS = 13;//e61
+int thermoDO = 12;//gpio12
+int thermoCLK = 16;//gpio16
+int TeCS = 14;//gpio14
 
-//MAX6675 Tboiler(thermoCLK, TbCS, thermoDO);
 MAX6675 Te61(thermoCLK, TeCS, thermoDO);
 OLED  display(SDA, SCL);
-//MedianFilter Te_filter(10);
+MedianFilter Te_filter(10);
+ESP8266Timer Timer1;
 
 float Tb=-99.9;
 float Te=-99.9;
 float	Pb=0;//Pboiler Bar
-float Pw=0;//Pwater Bar
 float Lw=0;//Lwater mL
 #define TIMER1 5000 //timer int 5ms
 #define TBLINK 1000000/TIMER1 //1sec
@@ -59,6 +65,8 @@ volatile unsigned int pump=0;//pump status
 volatile unsigned int press=0;//pressostat status
 volatile unsigned int flow=0;//flow counter
 bool is_90=false;//over 90*C
+
+void IRAM_ATTR TimingISR();
 
 void beeper(int t=1000, char i=1){//ms
 	while (i--){
@@ -74,17 +82,16 @@ void setup(){
   digitalWrite(SSR_PIN, SSR_OFF);
   pinMode(PBEEP, OUTPUT);
   digitalWrite(PBEEP, LOW);
-  pinMode (13, OUTPUT);  
-  digitalWrite(13, HIGH);
+  pinMode (LED, OUTPUT);  
+  digitalWrite(LED, HIGH);
   pinMode (PUMP_ON, INPUT_PULLUP);
   pinMode (PRESS_ON, INPUT_PULLUP);
   delay(500);
-  Timer1.initialize(TIMER1);//1ms
-  Timer1.attachInterrupt(TimingISR);
-  digitalWrite(13, LOW);
+  Timer1.attachInterruptInterval(TIMER1, TimingISR);//1ms
+  digitalWrite(LED, LOW);
   pinMode(PUMP_ON, INPUT_PULLUP);//INT0
-//  attachInterrupt(0, pumpISR, FALLING );
-//  attachInterrupt(1, pressISR, FALLING ); //3
+  attachInterrupt(PUMP_ON, pumpISR, FALLING );
+  attachInterrupt(PRESS_ON, pressISR, FALLING ); //3
   display.begin();
   interrupts();
 #ifdef SERIAL
@@ -95,9 +102,7 @@ void setup(){
 }
 
 void loop(){
-  Tb = Tboiler.readCelsius();
   Te = (float)Te_filter.process(Te61.readCelsius());
-  if(isnan (Tb))Tb=-99;
   if(isnan (Te))Te=-99;
 	Pb=pressure(analogRead(PBOILER),MAX_BOILER);
 	if(Pb>=0 && Pb<P_REG){
@@ -105,7 +110,6 @@ void loop(){
 	}else{
 		digitalWrite(SSR_PIN, SSR_OFF);
 	}
-	Pw=pressure(analogRead(PWATER),MAX_WATER);
   if(pump){//pump on
 		if(halfsec==0)flow=0;
   }else{
@@ -119,7 +123,7 @@ void loop(){
 
 //  display.setFont();
 
-	display.update();
+//	display.update();
 	if(Te>90 && is_90==false){
 		is_90=true;
 		beeper(500,3);
@@ -136,7 +140,7 @@ void pressISR(){
   press++;
 }
 
-void TimingISR(){
+void IRAM_ATTR TimingISR(){
 	static int hcnt=TBLINK;
 	static char spump=1;
 	static char spress=1;
@@ -147,7 +151,7 @@ void TimingISR(){
 	  if(pump){
 	    if(++halfsec>99)halfsec=0;
 	  }
-	  digitalWrite( 13, digitalRead( 13 ) ^ 1 );
+	  digitalWrite( LED, digitalRead( LED ) ^ 1 );
   }
 
   if(digitalRead(PUMP_ON)==LOW){//сработал датчик
