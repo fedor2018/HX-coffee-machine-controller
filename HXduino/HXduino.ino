@@ -16,6 +16,7 @@ BigNumbers - 14x24
 */
 #include <Wire.h>
 #include <OLED.h>
+#include <Fonts/FreeSerif9pt7b.h>
 #include <max6675.h>
 #include <math.h>
 #include <MedianFilter.h>
@@ -33,17 +34,17 @@ BigNumbers - 14x24
 #define P_REG	0.8		//Bar -> 93*C
 
 #define VIN  (220+51)/51 //1v->5v
-#define PUMP_ON  13 //gpio13
-#define PRESS_ON 1 //gpio? tx
-#define SSR_PIN  0 //gpio0
+#define PUMP_ON  13      //gpio13
+#define PRESS_ON 1      //gpio1 tx
+#define SSR_PIN  0      //gpio0
 #define PBEEP    15 	//gpio15
-#define PBOILER  A0//adc 
-#define LWATER	 2	//gpio2
-#define SSR_ON LOW
-#define SSR_OFF HIGH
-#define SDA 4
-#define SCL 5 
-#define LED 3 //rx
+#define PBOILER  A0     //adc 
+#define LWATER	 2	    //gpio2
+#define SSR_ON   LOW
+#define SSR_OFF  HIGH
+#define SDA      4
+#define SCL      5 
+#define LED      3      //rx
 
 int thermoDO = 12;//gpio12
 int thermoCLK = 16;//gpio16
@@ -56,7 +57,7 @@ ESP8266Timer Timer1;
 
 float Tb=-99.9;
 float Te=-99.9;
-float	Pb=0;//Pboiler Bar
+float Pb=0;//Pboiler Bar
 float Lw=0;//Lwater mL
 #define TIMER1 5000 //timer int 5ms
 #define TBLINK 1000000/TIMER1 //1sec
@@ -78,27 +79,32 @@ void beeper(int t=1000, char i=1){//ms
 }
 
 void setup(){
-	pinMode(SSR_PIN, OUTPUT);
-  digitalWrite(SSR_PIN, SSR_OFF);
-  pinMode(PBEEP, OUTPUT);
-  digitalWrite(PBEEP, LOW);
-  pinMode (LED, OUTPUT);  
-  digitalWrite(LED, HIGH);
-  pinMode (PUMP_ON, INPUT_PULLUP);
-  pinMode (PRESS_ON, INPUT_PULLUP);
-  delay(500);
-  Timer1.attachInterruptInterval(TIMER1, TimingISR);//1ms
-  digitalWrite(LED, LOW);
-  pinMode(PUMP_ON, INPUT_PULLUP);//INT0
-  attachInterrupt(PUMP_ON, pumpISR, FALLING );
-  attachInterrupt(PRESS_ON, pressISR, FALLING ); //3
-  display.begin();
-  interrupts();
 #ifdef SERIAL
   Serial.begin(115200);
+  delay(10);
   Serial.print("start\r\n");
 #endif
+    ESP.wdtEnable(WDTO_8S);
 
+//-------------    
+    pinMode(SSR_PIN, OUTPUT);
+    digitalWrite(SSR_PIN, SSR_OFF);
+    pinMode(PBEEP, OUTPUT);
+    digitalWrite(PBEEP, LOW);
+    pinMode (LED, OUTPUT);  
+    digitalWrite(LED, HIGH);
+    pinMode (PUMP_ON, INPUT_PULLUP);
+    pinMode (PRESS_ON, INPUT_PULLUP);
+    display.display();
+    delay(500);
+    display.setFont(&FreeSerif9pt7b);
+    display.clearDisplay();
+    Timer1.attachInterruptInterval(TIMER1, TimingISR);//1ms
+    digitalWrite(LED, LOW);
+    pinMode(PUMP_ON, INPUT_PULLUP);//INT0
+    attachInterrupt(PUMP_ON, pumpISR, FALLING );
+    attachInterrupt(PRESS_ON, pressISR, FALLING ); //3
+    interrupts();
 }
 
 void loop(){
@@ -130,6 +136,7 @@ void loop(){
 	}else{
   	delay(200);
   }
+  ESP.wdtFeed();
 }
 
 void pumpISR(){
