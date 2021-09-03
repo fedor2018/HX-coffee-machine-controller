@@ -1,8 +1,10 @@
+#ifndef _DEF_
+#define _DEF_
 
 #define VER 1.0
 
 //#define SERIAL 1 //debug serial
-#define MAX_BOILER	60//psi
+#define MAX_BOILER	60 //psi
 //#define MAX_WATER 300	//psi
 #define Q_WATER	2016 	//Pulse/liter
 #define P_REG	0.8		//Bar -> 93*C
@@ -24,13 +26,21 @@
 #define TIMER1 5000 //timer int 5ms
 #define TBLINK 1000000/TIMER1 //1sec
 
-#define thermoDO  12;//gpio12
-#define thermoCLK 16;//gpio16
-#define TeCS      14;//gpio14
+#define thermoDO  12 //gpio12
+#define thermoCLK 16 //gpio16
+#define TeCS      14 //gpio14
 
 #include <SPI.h>
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
-#include "Fonts/NotoSans12pt7b.h"
-#include "Fonts/NotoSans22pt7b.h"
+#include "NotoSans12pt7b.h"
+#include "NotoSans22pt7b.h"
+
+void beeper(int t, char i);
+void set_disp();
+void disp_flow();
+void disp_heat();
+void ver();
+
+#endif
