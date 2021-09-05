@@ -3,7 +3,7 @@
 
 #include <max6675.h>
 #include <math.h>
-#include <MedianFilter.h>
+//#include <MedianFilter.h>
 #include <ESP8266TimerInterrupt.h>
 #include <ESP8266_ISR_Timer.h>
 //#include <ESPeasySoftwareSerial.h>
@@ -14,7 +14,7 @@
 
 //extern Adafruit_SSD1306 display;
 MAX6675 Te61(thermoCLK, TeCS, thermoDO);
-MedianFilter Te_filter(10);
+//MedianFilter Te_filter(10);
 ESP8266Timer Timer1;
 //ESPeasySoftwareSerial swSer( -1, 3, false, 256);
 
@@ -32,8 +32,9 @@ bool is_90=false;//over 90*C
 void IRAM_ATTR TimingISR();
 
 void setup(){
-//  swSer.begin(9600);
-//  swSer.print("start\r\n");
+    Serial.begin(57600);
+    Serial.print("\r\nstart\r\n");
+
 //-------------    
     pinMode(SSR_PIN, OUTPUT);
     digitalWrite(SSR_PIN, SSR_OFF);
@@ -42,20 +43,20 @@ void setup(){
 //    pinMode (LED, OUTPUT);  
 //    digitalWrite(LED, HIGH);
     pinMode (PUMP_ON, INPUT_PULLUP);
-    pinMode (PRESS_ON, INPUT_PULLUP);
+//    pinMode (PRESS_ON, INPUT_PULLUP);
 //-----
     ver();
+    beeper(500,1);
 //-----
-    delay(1000);
-    set_disp();
-    disp_heat();
+    delay(500);
+//    set_disp();
+//    disp_heat();
     Timer1.attachInterruptInterval(TIMER1, TimingISR);//1ms
 //    digitalWrite(LED, LOW);
-    pinMode(PUMP_ON, INPUT_PULLUP);//INT0
-    attachInterrupt(PUMP_ON, pumpISR, FALLING );
+//    attachInterrupt(PUMP_ON, pumpISR, FALLING );
 //    attachInterrupt(PRESS_ON, pressISR, FALLING ); //3
     interrupts();
-    ESP.wdtEnable(WDTO_8S);
+//    ESP.wdtEnable(WDTO_8S);
 }
 
 // -----------------------------------
@@ -74,7 +75,7 @@ void loop(){
   		digitalWrite(SSR_PIN, SSR_OFF);
   	}
   	Lw=flow2ml(flow);
-    hb();
+//    hb();
     if(pump){//pump on
   		if(halfsec==0)flow=0;
         disp_flow();
@@ -90,7 +91,7 @@ void loop(){
     }else{
     	delay(200);
     }
-    ESP.wdtFeed();    
+//    ESP.wdtFeed();    
 }
 
 void pumpISR(){
@@ -124,16 +125,7 @@ void IRAM_ATTR TimingISR(){
     }else{
     	spump=1;
     }
-/*    
-    if(digitalRead(PRESS_ON)==LOW){//сработал датчик
-    	if(spress==1){//только 1 за период
-    		spress=0;
-    		press++;
-    	}
-    }else{
-    	spress=1;
-    }
-*/    
+     
     if(digitalRead(LWATER)==LOW){//сработал датчик
     	if(sflow==1){//только 1 за период
     		sflow=0;
@@ -143,4 +135,3 @@ void IRAM_ATTR TimingISR(){
     	sflow=1;
     }
 }
-

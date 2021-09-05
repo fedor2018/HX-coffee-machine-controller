@@ -1,7 +1,7 @@
 #ifndef _DEF_
 #define _DEF_
 
-#define VER 1.0
+#define VER "1.0"
 
 //#define SERIAL 1 //debug serial
 #define MAX_BOILER	60 //psi
@@ -30,13 +30,13 @@
 #define thermoCLK 16 //gpio16
 #define TeCS      14 //gpio14
 
-#include <SPI.h>
+/*#include <SPI.h>
 #include <Wire.h>
 #include <Adafruit_GFX.h>
-#include <Adafruit_SSD1306.h>
+#include <Adafruit_SH110X.h>
 #include "NotoSans12pt7b.h"
 #include "NotoSans22pt7b.h"
-
+*/
 void beeper(int t, char i);
 void set_disp();
 void disp_flow();
