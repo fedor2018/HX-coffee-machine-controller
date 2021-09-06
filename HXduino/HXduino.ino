@@ -6,17 +6,10 @@
 //#include <MedianFilter.h>
 #include <ESP8266TimerInterrupt.h>
 #include <ESP8266_ISR_Timer.h>
-//#include <ESPeasySoftwareSerial.h>
 
-// ------------------------------------------------
-// Program Globals
-// ------------------------------------------------
-
-//extern Adafruit_SSD1306 display;
 MAX6675 Te61(thermoCLK, TeCS, thermoDO);
 //MedianFilter Te_filter(10);
 ESP8266Timer Timer1;
-//ESPeasySoftwareSerial swSer( -1, 3, false, 256);
 
 //float Tb=-99.9;
 float Te=-99.9;
@@ -32,29 +25,25 @@ bool is_90=false;//over 90*C
 void IRAM_ATTR TimingISR();
 
 void setup(){
-    Serial.begin(57600);
-    Serial.print("\r\nstart\r\n");
-
+    Serial.begin(57600, SERIAL_8N1, SERIAL_TX_ONLY);
+    Serial.println("\r\nstart");
 //-------------    
     pinMode(SSR_PIN, OUTPUT);
     digitalWrite(SSR_PIN, SSR_OFF);
     pinMode(PBEEP, OUTPUT);
     digitalWrite(PBEEP, LOW);
-//    pinMode (LED, OUTPUT);  
-//    digitalWrite(LED, HIGH);
     pinMode (PUMP_ON, INPUT_PULLUP);
-//    pinMode (PRESS_ON, INPUT_PULLUP);
+    pinMode (PRESS_ON, INPUT_PULLUP);
 //-----
     ver();
     beeper(500,1);
 //-----
     delay(500);
-//    set_disp();
-//    disp_heat();
+    if(!digitalRead(PRESS_ON)){//ota mode
+        ota_loop();
+    }
     Timer1.attachInterruptInterval(TIMER1, TimingISR);//1ms
-//    digitalWrite(LED, LOW);
-//    attachInterrupt(PUMP_ON, pumpISR, FALLING );
-//    attachInterrupt(PRESS_ON, pressISR, FALLING ); //3
+    attachInterrupt(digitalPinToInterrupt(PUMP_ON), pumpISR, FALLING );
     interrupts();
 //    ESP.wdtEnable(WDTO_8S);
 }
@@ -67,7 +56,7 @@ void loop(){
     Te = Te61.readCelsius();
     if(isnan (Te))Te=-99;
 //    Te = (float)Te_filter.process(Te61);
-  	Pb=pressure(analogRead(PBOILER),MAX_BOILER);
+  	Pb=pressure(analogRead(PBOILER),SCALE_BOILER);
   	if(Pb>=0 && 
         ((but==1&&pump==0) && Pb<P_REG)||((but==0||pump!=0) && Pb<P_FLOW)){
   		digitalWrite(SSR_PIN, SSR_ON);
@@ -75,7 +64,6 @@ void loop(){
   		digitalWrite(SSR_PIN, SSR_OFF);
   	}
   	Lw=flow2ml(flow);
-//    hb();
     if(pump){//pump on
   		if(halfsec==0)flow=0;
         disp_flow();
@@ -105,12 +93,13 @@ void pumpISR(){
 void IRAM_ATTR TimingISR(){
     static int hcnt=TBLINK;
     static char spump=1;
-    static char spress=1;
+//    static char spress=1;
     static char sflow=1;
     
     if(hcnt++<=0){//1sec
     	hcnt=TBLINK;
         uptime++;
+        Serial.println(uptime);//test!
       if(pump){
         if(++halfsec>99)halfsec=0;
       }

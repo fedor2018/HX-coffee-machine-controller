@@ -5,19 +5,32 @@
 #include "SH1106.h"
 SH1106 disp(0x3c, 4, 5);
 
-#define gLen 40
-#define gMax 25
-int8_t buf[gLen];//
+int8_t buf[gLen];//graph buffer
 char str[32];
 
 void ver(){
     disp.init();
     disp.flipScreenVertically();;
-    disp.setTextAlignment(TEXT_ALIGN_CENTER);
+    disp.setTextAlignment(TEXT_ALIGN_CENTER_BOTH);
     disp.setFont(ArialMT_Plain_24);
-    disp.drawString(64,12,"v. " VER);
+    disp.drawString(disp.getWidth() / 2, disp.getHeight() / 2 - 24,"v. " VER);
     disp.display();
+    Serial.println("firmware ver. " VER);
     memset(buf, 0, sizeof(buf));
+}
+
+void ota(const char *str){
+    disp.clear();
+    disp.setTextAlignment(TEXT_ALIGN_CENTER_BOTH);
+    disp.setFont(ArialMT_Plain_16);
+    disp.drawString(disp.getWidth() / 2, disp.getHeight() / 2 - 16, str);
+    disp.display();
+    Serial.println(str);
+}
+
+void ota_prog(unsigned int progress, unsigned int total){
+    disp.drawProgressBar(4, 32, 120, 8, progress / (total / 100) );
+    disp.display();
 }
 
 void printT(int p){//temp
@@ -45,44 +58,46 @@ void printF(int p){//flow
 }
 
 void hb(){//heatbead
-    static char c=47;//('/');
+    static char c='/';
     disp.setTextAlignment(TEXT_ALIGN_CENTER_BOTH);
     disp.setFont(ArialMT_Plain_16);
-    switch(c){
-        case 47://'/':
-            c=45;//('-');
-            break;
-        case 45://'-':
-            c=92;//('\');
-            break;
-        case 92://'\':
-            c=124;//('|');
-            break;
-        default:
-            c=47;//('/');
-            break;
-    }
-    disp.drawString(128,32, String(c));
-//    disp.display();
+      switch(c){
+          case '/'://47://'/':
+              c='-';//45;//('-');
+              break;
+          case '-'://45://'-':
+              c='\\';//92;//('\');
+              break;
+          case '\\'://92://'\':
+              c='|';//124;//('|');
+              break;
+          default:
+              c='/';//47;//('/');
+              break;
+      }
+    disp.drawString(/*128,32*/ disp.getWidth() / 2, disp.getHeight() / 2 -16, String(c));
 }
-/*
+
 void graph(float val, float max){//74,37,40,25
     static int8_t n=0;//
-    int8_t v=(int8_t)((max/val)*gMax);
-    buf[n]=v;
+    if(val<=0)val=1;
+    if(val>max)val=max;
+    int8_t v=(int8_t)((val/max)*gMax);//graph val
     n++;
-    if(n>=gLen){
+    if(n>=gLen){//shift left
         memcpy(buf,buf+1,sizeof(gLen)-1);
         n=gLen;
     }
+    buf[n]=v;
+    disp.drawRect (74, 37, 114, 63);
     for (int8_t i=0;i<gLen;i++){
-        disp.writeFastVLine(74+i, 37, gMax, SH110X_BLACK);
-        disp.writeFastVLine(74+i, 37+(gMax-buf[i]), gMax-buf[i], SH110X_WHITE);
+        //disp.drawVerticalLine(74+i, 37, gMax, SH110X_BLACK);
+        disp.drawVerticalLine(gX+i, gY+(gMax-buf[i]), gMax-buf[i]);//x y h
     }
     //disp.drawString(81, 41);
     //drawBitmap(int16_t x, int16_t y, uint8_t *bitmap, int16_t w, int16_t h, uint16_t color, uint16_t bg) 
 }
-*/
+
 void set_disp(){
     disp.clear();
     disp.drawRect (0, 0, 127, 63);
@@ -103,6 +118,6 @@ void disp_heat(){
     printT((int)Te);
     printP(Pb);
     curtime(uptime);
-//    graph(Pb, 1.5);
+    graph(Pb, 1.5);
     disp.display();
 }

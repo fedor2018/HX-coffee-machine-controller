@@ -24,3 +24,8 @@ L  - flow           0-200 ml
 давление в магистрали - 1/8" тройник
 расход воды - трубка d4x7 Q>100
 */
+
+arduino esp8266 v.2.7.4
+max6675
+ESP8266TimerInterrupt
+ThingPulse/esp8266-oled-ssd1306

@@ -9,16 +9,17 @@ float psi2bar(float psi){
 	return (psi/14.5037738);//1 Bar = 14,5037738 Psi
 }
 
-float pressure(int adcval,int max){//adc->bar
+#define VIN  (220+51)/51 //1v->5v
+float pressure(int adcval,int scale){//adc->bar
     float p;   
     p = ((float)(adcval*VIN/1024.0)); 
-    if (p < 0.1){//short
+    if (p < 0.4){//short
     	p = -98;//
-    }else if(p> 4.8){//no sensor
+    }else if(p> 4.6){//no sensor
     	p=-99;
     }else{
     	p-=0.5;
-    	p*=(max/4.0);//psi
+    	p*=(scale/4.0);//psi
     	p=psi2bar(p);//bar
     }
     return p;
