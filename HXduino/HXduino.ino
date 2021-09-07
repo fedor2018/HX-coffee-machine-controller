@@ -5,7 +5,7 @@
 #include <math.h>
 //#include <MedianFilter.h>
 #include <ESP8266TimerInterrupt.h>
-#include <ESP8266_ISR_Timer.h>
+//#include <ESP8266_ISR_Timer.h>
 
 MAX6675 Te61(thermoCLK, TeCS, thermoDO);
 //MedianFilter Te_filter(10);
@@ -17,12 +17,14 @@ float Pb=0;//Pboiler Bar
 float Lw=0;//Lwater mL
 volatile char halfsec=0;//seconds counter
 volatile unsigned int uptime=0;//uptime in sec
+volatile unsigned int loopcnt=0;//loop in sec/5
 volatile unsigned int pump=0;//pump status
 volatile unsigned int press=0;//pressostat status
 volatile unsigned int flow=0;//flow counter
 bool is_90=false;//over 90*C
 
 void IRAM_ATTR TimingISR();
+void  ICACHE_RAM_ATTR pumpISR();
 
 void setup(){
     Serial.begin(57600, SERIAL_8N1, SERIAL_TX_ONLY);
@@ -36,22 +38,25 @@ void setup(){
     pinMode (PRESS_ON, INPUT_PULLUP);
 //-----
     ver();
-    beeper(500,1);
+//    beeper(500,1);
 //-----
     delay(500);
-    if(!digitalRead(PRESS_ON)){//ota mode
-        ota_loop();
-    }
+//    if(!digitalRead(PRESS_ON)){//ota mode
+//        ota_loop();
+//    }
     Timer1.attachInterruptInterval(TIMER1, TimingISR);//1ms
     attachInterrupt(digitalPinToInterrupt(PUMP_ON), pumpISR, FALLING );
     interrupts();
-//    ESP.wdtEnable(WDTO_8S);
+//    ESP.wdtDisable();
+//    ESP.wdtEnable(0);//WDTO_8S);
 }
 
 // -----------------------------------
 // Main event loop
 // -----------------------------------
 void loop(){
+    Serial.println(loopcnt);//test!
+    loopcnt=0;//reset loop wdt
     char but=digitalRead(PRESS_ON);
     Te = Te61.readCelsius();
     if(isnan (Te))Te=-99;
@@ -82,7 +87,7 @@ void loop(){
 //    ESP.wdtFeed();    
 }
 
-void pumpISR(){
+void  ICACHE_RAM_ATTR pumpISR(){
   pump++;
 }
 
@@ -95,11 +100,11 @@ void IRAM_ATTR TimingISR(){
     static char spump=1;
 //    static char spress=1;
     static char sflow=1;
-    
-    if(hcnt++<=0){//1sec
+
+    loopcnt++;
+    if(hcnt--<=0){//1sec
     	hcnt=TBLINK;
         uptime++;
-        Serial.println(uptime);//test!
       if(pump){
         if(++halfsec>99)halfsec=0;
       }

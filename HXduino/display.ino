@@ -13,7 +13,7 @@ void ver(){
     disp.flipScreenVertically();;
     disp.setTextAlignment(TEXT_ALIGN_CENTER_BOTH);
     disp.setFont(ArialMT_Plain_24);
-    disp.drawString(disp.getWidth() / 2, disp.getHeight() / 2 - 24,"v. " VER);
+    disp.drawString(disp.getWidth() / 2, disp.getHeight() / 2 ,"v. " VER);
     disp.display();
     Serial.println("firmware ver. " VER);
     memset(buf, 0, sizeof(buf));
@@ -23,7 +23,7 @@ void ota(const char *str){
     disp.clear();
     disp.setTextAlignment(TEXT_ALIGN_CENTER_BOTH);
     disp.setFont(ArialMT_Plain_16);
-    disp.drawString(disp.getWidth() / 2, disp.getHeight() / 2 - 16, str);
+    disp.drawString(disp.getWidth() / 2, disp.getHeight() / 2 , str);
     disp.display();
     Serial.println(str);
 }
@@ -36,19 +36,27 @@ void ota_prog(unsigned int progress, unsigned int total){
 void printT(int p){//temp
     disp.setTextAlignment(TEXT_ALIGN_RIGHT);
     disp.setFont(ArialMT_Plain_24);
-    disp.drawStringf(126,1, str,"T:%3d", p+random(0,100));
+    if(p<0)
+      disp.drawString(126,1, "Tbad");
+    else
+      disp.drawStringf(126,1, str,"T %3d", p);
 }
 
 void printP(float p){//pressure
     disp.setTextAlignment(TEXT_ALIGN_LEFT);
     disp.setFont(ArialMT_Plain_24);
-    disp.drawStringf(3, 35, str,"P:%1.1f", p);
+    if(p<0)
+      disp.drawString(3, 35, "P:bad");
+    else if(digitalRead(PRESS_ON))
+      disp.drawStringf(3, 35, str,"P %1.1f", p);
+      else
+      disp.drawStringf(3, 35, str,"P+%1.1f", p);
 }
 
 void curtime(int p){//uptime
     disp.setTextAlignment(TEXT_ALIGN_LEFT);
     disp.setFont(ArialMT_Plain_16);
-    disp.drawStringf( 3, 5, str, "%04d", p);
+    disp.drawStringf( 3, 5, str, "t%3d", p/60);
 }
 
 void printF(int p){//flow
@@ -75,7 +83,7 @@ void hb(){//heatbead
               c='/';//47;//('/');
               break;
       }
-    disp.drawString(/*128,32*/ disp.getWidth() / 2, disp.getHeight() / 2 -16, String(c));
+    disp.drawString(/*128,32*/ disp.getWidth() / 2, disp.getHeight() / 2 , String(c));
 }
 
 void graph(float val, float max){//74,37,40,25
@@ -118,6 +126,7 @@ void disp_heat(){
     printT((int)Te);
     printP(Pb);
     curtime(uptime);
-    graph(Pb, 1.5);
+//    graph(Pb, 1.5);
+//disp.drawStringf(81, 41, str, "%d", loopcnt);
     disp.display();
 }

@@ -59,7 +59,7 @@ void startMDNS() { // Start the mDNS responder
 
 void ota_loop(){
     startWiFi();
-    startMDNS();
+//    startMDNS();
     startOTA();
     while(1){
         ArduinoOTA.handle();

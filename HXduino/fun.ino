@@ -12,11 +12,12 @@ float psi2bar(float psi){
 #define VIN  (220+51)/51 //1v->5v
 float pressure(int adcval,int scale){//adc->bar
     float p;   
-    p = ((float)(adcval*VIN/1024.0)); 
-    if (p < 0.4){//short
-    	p = -98;//
-    }else if(p> 4.6){//no sensor
-    	p=-99;
+    p = ((float)(adcval*VIN/1024.0));
+//    return p; 
+    if (p < 0.5){//short
+    	p = -8;//
+    }else if(p> 4.5){//no sensor
+    	p=-9;
     }else{
     	p-=0.5;
     	p*=(scale/4.0);//psi
