@@ -22,12 +22,16 @@ void startWiFi() {
 
 void startOTA() { // start the Over The Air update services
 
-  ArduinoOTA.onStart([]() { 
-    ota("Update start");
+  ArduinoOTA.onStart([]() {
+    if(ArduinoOTA.getCommand() == U_FLASH) 
+      ota("Update start: fw");
+    else
+      ota("Update start: fs");
    });
 
   ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) { 
     ota_prog(progress, total);
+    yield();
   });
 
   ArduinoOTA.onEnd([]() { 
@@ -48,7 +52,7 @@ void startOTA() { // start the Over The Air update services
     while(1);
   });  
   
-  ota("OTA start");
+  ota("OTA wait..");
   ArduinoOTA.begin();
 }
 
@@ -59,9 +63,10 @@ void startMDNS() { // Start the mDNS responder
 
 void ota_loop(){
     startWiFi();
-//    startMDNS();
+    startMDNS();
     startOTA();
     while(1){
+      yield();
         ArduinoOTA.handle();
     }
 }

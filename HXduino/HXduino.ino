@@ -40,14 +40,14 @@ void setup(){
     ver();
 //    beeper(500,1);
 //-----
+    ESP.wdtDisable();
     delay(500);
 //    if(!digitalRead(PRESS_ON)){//ota mode
-//        ota_loop();
+        ota_loop();
 //    }
     Timer1.attachInterruptInterval(TIMER1, TimingISR);//1ms
     attachInterrupt(digitalPinToInterrupt(PUMP_ON), pumpISR, FALLING );
     interrupts();
-//    ESP.wdtDisable();
 //    ESP.wdtEnable(0);//WDTO_8S);
 }
 
@@ -55,7 +55,7 @@ void setup(){
 // Main event loop
 // -----------------------------------
 void loop(){
-    Serial.println(loopcnt);//test!
+//    Serial.println(loopcnt);//test!
     loopcnt=0;//reset loop wdt
     char but=digitalRead(PRESS_ON);
     Te = Te61.readCelsius();
@@ -101,7 +101,9 @@ void IRAM_ATTR TimingISR(){
 //    static char spress=1;
     static char sflow=1;
 
-    loopcnt++;
+    if(loopcnt++>40*8){//8s
+      digitalWrite(SSR_PIN, SSR_OFF);
+    }  
     if(hcnt--<=0){//1sec
     	hcnt=TBLINK;
         uptime++;

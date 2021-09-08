@@ -29,7 +29,7 @@ void ota(const char *str){
 }
 
 void ota_prog(unsigned int progress, unsigned int total){
-    disp.drawProgressBar(4, 32, 120, 8, progress / (total / 100) );
+    disp.drawProgressBar(4, 40, 120, 8, progress / (total / 100) );
     disp.display();
 }
 
