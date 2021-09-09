@@ -46,7 +46,8 @@ void startOTA() { // start the Over The Air update services
         ota("End Failed");
     while(1)yield();
   });  
-  
+  ArduinoOTA.setPort(8266);
+  ArduinoOTA.setHostname(WIFI_SSID);
   ota("OTA wait..");
   ArduinoOTA.begin();
 }
@@ -58,7 +59,7 @@ void startMDNS() { // Start the mDNS responder
 
 void ota_loop(){
     startWiFi();
-    startMDNS();
+//    startMDNS();
     startOTA();
     while(1){
       yield();

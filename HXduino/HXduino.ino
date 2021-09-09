@@ -44,10 +44,11 @@ void setup(){
 //-----
     ESP.wdtDisable();
     delay(500);
-    if(system_get_rst_info()){//error rst
+/*    if(ESP.system_get_rst_info()){//error rst
         disp_rst();
         while(1)yield();
     }
+*/
 //    if(!digitalRead(PRESS_ON)){//ota mode
         ota_loop();
 //    }
