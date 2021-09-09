@@ -130,3 +130,13 @@ void disp_heat(){
 //disp.drawStringf(81, 41, str, "%d", loopcnt);
     disp.display();
 }
+
+void disp_rst(){
+    disp.clear();
+    disp.setTextAlignment(TEXT_ALIGN_CENTER);
+    disp.setFont(ArialMT_Plain_16);
+    disp.drawStringf(disp.getWidth() / 2, 20, str, "ERROR: %d", system_get_rst_info());
+    disp.drawString (disp.getWidth() / 2, 40, "STOP" );
+    disp.invertDisplay();
+    disp.display();
+}

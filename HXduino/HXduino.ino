@@ -5,13 +5,15 @@
 #include <math.h>
 //#include <MedianFilter.h>
 #include <ESP8266TimerInterrupt.h>
-//#include <ESP8266_ISR_Timer.h>
-
+#ifdef ESP8266
+extern "C" {
+#include "user_interface.h"
+}
+#endif
 MAX6675 Te61(thermoCLK, TeCS, thermoDO);
 //MedianFilter Te_filter(10);
 ESP8266Timer Timer1;
 
-//float Tb=-99.9;
 float Te=-99.9;
 float Pb=0;//Pboiler Bar
 float Lw=0;//Lwater mL
@@ -42,13 +44,16 @@ void setup(){
 //-----
     ESP.wdtDisable();
     delay(500);
+    if(system_get_rst_info()){//error rst
+        disp_rst();
+        while(1)yield();
+    }
 //    if(!digitalRead(PRESS_ON)){//ota mode
         ota_loop();
 //    }
     Timer1.attachInterruptInterval(TIMER1, TimingISR);//1ms
     attachInterrupt(digitalPinToInterrupt(PUMP_ON), pumpISR, FALLING );
     interrupts();
-//    ESP.wdtEnable(0);//WDTO_8S);
 }
 
 // -----------------------------------

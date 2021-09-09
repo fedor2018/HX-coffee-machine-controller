@@ -10,13 +10,8 @@ IPAddress apIP(192, 168, 4, 1);             // The IP address of the access poin
 void startWiFi() {
   WiFi.hostname(WIFI_SSID);
   WiFi.mode(WIFI_AP);
-  if(!WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0))){
-    ota("AP error");
-  }
-  if(!WiFi.softAP(WIFI_SSID, "")){
-    ota("AP not start");
-  }
-  //WiFi.softAPIP()
+  WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0));
+  WiFi.softAP(WIFI_SSID, "");
   ota("AP start");
 }
 
@@ -49,7 +44,7 @@ void startOTA() { // start the Over The Air update services
         ota("Receive Failed");
     else if (error == OTA_END_ERROR)
         ota("End Failed");
-    while(1);
+    while(1)yield();
   });  
   
   ota("OTA wait..");
@@ -67,6 +62,6 @@ void ota_loop(){
     startOTA();
     while(1){
       yield();
-        ArduinoOTA.handle();
+      ArduinoOTA.handle();
     }
 }
