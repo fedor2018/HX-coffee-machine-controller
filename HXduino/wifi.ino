@@ -22,6 +22,8 @@ void startOTA() { // start the Over The Air update services
       ota("Update start: fw");
     else
       ota("Update start: fs");
+    Serial.print("sketch size=");
+    Serial.println(ESP.getFreeSketchSpace());
    });
 
   ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) { 
