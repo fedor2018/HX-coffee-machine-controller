@@ -34,3 +34,26 @@ void beeper(int t=1000, char i=1){//ms
 		delay(t);
 	}
 }
+
+char state(){
+  	if(Pb>=0){
+        if(is_90==false && Pb<P_FLOW){
+//            disp_state("WARM");
+            return 1;
+        }
+        if (is_90 && Pb<P_REG && but==OFF && pump==0){
+//            disp_state("HEAT");
+            return 2;
+        }
+        if(Pb<P_FLOW && but==ON){
+//            disp_state("STEAM");
+            return 3;
+        }
+        if(Pb<P_FLOW && pump){
+//            disp_state("FLOW");
+            return 4;
+        }    
+    }
+//    disp_state("OFF");
+    return 0;       
+}

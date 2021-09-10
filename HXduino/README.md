@@ -29,3 +29,11 @@ arduino esp8266 v.2.7.4
 max6675
 ESP8266TimerInterrupt
 ThingPulse/esp8266-oled-ssd1306
+
+Pb>=0
+button_up   pump_on   Pb    T   SSR
+  x           x       <1.3  <90  on  быстрый разогрев
+  off         off     <0.9  >90  on  подогрев
+  on          x       <1.3  x    on  пар
+  x           on      <1.3  x    on  пролив
+  -----------------------        off выкл. нагреватель

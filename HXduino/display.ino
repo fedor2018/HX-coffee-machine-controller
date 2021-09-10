@@ -15,22 +15,52 @@ void ver(){
     disp.setFont(ArialMT_Plain_24);
     disp.drawString(disp.getWidth() / 2, disp.getHeight() / 2 ,"v. " VER);
     disp.display();
-    Serial.println("firmware ver. " VER);
+    Serial.println(F("firmware ver. " VER));
     memset(buf, 0, sizeof(buf));
 }
 
-void ota(const char *str){
+void ota(const char *s){
     disp.clear();
     disp.setTextAlignment(TEXT_ALIGN_CENTER_BOTH);
     disp.setFont(ArialMT_Plain_16);
-    disp.drawString(disp.getWidth() / 2, disp.getHeight() / 2 , str);
+    disp.drawString(disp.getWidth() / 2, disp.getHeight() / 2 , s);
     disp.display();
-    Serial.println(str);
+    Serial.println(s);
+}
+
+void otaf(PGM_P s){
+    strcpy_P(str, s);
+    ota((const char*)str);
 }
 
 void ota_prog(unsigned int progress, unsigned int total){
     disp.drawProgressBar(4, 40, 120, 8, progress / (total / 100) );
     disp.display();
+}
+
+void disp_state(){
+    disp.setTextAlignment(TEXT_ALIGN_CENTER);
+    disp.setFont(ArialMT_Plain_10);
+    switch(st){
+        case 1:
+            strcpy_P(str, PSTR("WARM"));
+            break;
+        case 2:
+            strcpy_P(str, PSTR("HEAT"));
+            break;
+        case 3:
+            strcpy_P(str, PSTR("STEAM"));
+            break;
+        case 4:
+            strcpy_P(str, PSTR("FLOW"));
+            break;
+        case 0:
+            strcpy_P(str, PSTR("OFF")); 
+            break;
+        default:
+            strcpy_P(str, PSTR("ERR")); 
+    }
+    disp.drawString(32,10, str);
 }
 
 void printT(int p){//temp
@@ -46,7 +76,7 @@ void printP(float p){//pressure
     disp.setTextAlignment(TEXT_ALIGN_LEFT);
     disp.setFont(ArialMT_Plain_24);
     if(p<0)
-      disp.drawString(3, 35, "P:bad");
+      disp.drawString(3, 35, F("P:bad"));
     else if(digitalRead(PRESS_ON))
       disp.drawStringf(3, 35, str,"P %1.1f", p);
       else
@@ -118,6 +148,7 @@ void disp_flow(){
     printP(Pb);
     printF((int)Lw);
     curtime(halfsec);
+    disp_state();
     disp.display();
 }
 
@@ -126,6 +157,7 @@ void disp_heat(){
     printT((int)Te);
     printP(Pb);
     curtime(uptime);
+    disp_state();
 //    graph(Pb, 1.5);
 //disp.drawStringf(81, 41, str, "%d", loopcnt);
     disp.display();
@@ -135,8 +167,8 @@ void disp_rst(){
     disp.clear();
     disp.setTextAlignment(TEXT_ALIGN_CENTER);
     disp.setFont(ArialMT_Plain_16);
-    disp.drawStringf(disp.getWidth() / 2, 20, str, "ERROR: %d", system_get_rst_info());
-    disp.drawString (disp.getWidth() / 2, 40, "STOP" );
+    disp.drawStringf(disp.getWidth() / 2, 20, str, "ERROR: %d", system_get_rst_info()->reason);
+    disp.drawString (disp.getWidth() / 2, 40, F("STOP") );
     disp.invertDisplay();
     disp.display();
 }
