@@ -3,7 +3,7 @@
 
 #include <max6675.h>
 #include <math.h>
-//#include <MedianFilter.h>
+#include "MedianFilterLib.h"
 #include <ESP8266TimerInterrupt.h>
 #ifdef ESP8266
 extern "C" {
@@ -11,7 +11,7 @@ extern "C" {
 }
 #endif
 MAX6675 Te61(thermoCLK, TeCS, thermoDO);
-//MedianFilter Te_filter(10);
+MedianFilter<float> medianFilter(10);
 ESP8266Timer Timer1;
 
 float Te=-99.9;
@@ -46,14 +46,15 @@ void setup(){
 //    beeper(500,1);
 //-----
     delay(500);
-    if(system_get_rst_info()->reason){//error rst
-        disp_rst();
+    char rst=system_get_rst_info()->reason;
+    if(rst>0 && rst<6){//error rst
+        disp_rst(rst);
         while(1)yield();
     }
 
-//    if(!digitalRead(PRESS_ON)){//ota mode
+    if(!digitalRead(PRESS_ON)){//ota mode
         ota_loop();
-//    }
+    }
     Timer1.attachInterruptInterval(TIMER1, TimingISR);//1ms
     attachInterrupt(digitalPinToInterrupt(PUMP_ON), pumpISR, FALLING );
     interrupts();
@@ -66,8 +67,9 @@ void loop(){
     loopcnt=0;//reset loop wdt
     but=digitalRead(PRESS_ON);
     Te = Te61.readCelsius();
-    if(isnan (Te))Te=-99;
-//    Te = (float)Te_filter.process(Te61);
+    if(isnan (Te))
+      Te=-99;
+    Te = medianFilter.AddValue(Te+T_OFFSET);
   	Pb=pressure(analogRead(PBOILER),SCALE_BOILER);
 //-----
     st=state();    

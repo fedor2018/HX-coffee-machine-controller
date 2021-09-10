@@ -1,8 +1,6 @@
 #ifndef _DEF_
 #define _DEF_
 
-//#define USE_OTA //OTA or HTTP
-
 #define VER "1.0"
 
 //#define SERIAL 1 //debug serial
@@ -14,6 +12,7 @@
 #define P_FLOW  1.3     //flow    mode 107*C
 #define T_BEEP  90      //T hx ready
 #define P_MIN   0.1     //P min steam
+#define T_OFFSET -5     // Te error offset
 
 //#define VIN  (220+51)/51 //1v->5v
 #define PUMP_ON  13     //gpio13, pump on counter
@@ -50,9 +49,6 @@ void set_disp();
 void disp_flow();
 void disp_heat();
 void ver();
-void ota_loop();
-//void ota();
-void ota_prog(unsigned int progress,unsigned int total);
 char state();
 
 #endif

@@ -60,7 +60,7 @@ void disp_state(){
         default:
             strcpy_P(str, PSTR("ERR")); 
     }
-    disp.drawString(32,10, str);
+    disp.drawString(30,25, str);
 }
 
 void printT(int p){//temp
@@ -163,11 +163,11 @@ void disp_heat(){
     disp.display();
 }
 
-void disp_rst(){
+void disp_rst(char rst){
     disp.clear();
     disp.setTextAlignment(TEXT_ALIGN_CENTER);
     disp.setFont(ArialMT_Plain_16);
-    disp.drawStringf(disp.getWidth() / 2, 20, str, "ERROR: %d", system_get_rst_info()->reason);
+    disp.drawStringf(disp.getWidth() / 2, 20, str, "ERROR: %d", rst);//system_get_rst_info()->reason);
     disp.drawString (disp.getWidth() / 2, 40, F("STOP") );
     disp.invertDisplay();
     disp.display();

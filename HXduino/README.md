@@ -32,8 +32,8 @@ ThingPulse/esp8266-oled-ssd1306
 
 Pb>=0
 button_up   pump_on   Pb    T   SSR
-  x           x       <1.3  <90  on  быстрый разогрев
-  off         off     <0.9  >90  on  подогрев
-  on          x       <1.3  x    on  пар
-  x           on      <1.3  x    on  пролив
-  -----------------------        off выкл. нагреватель
+  x           x       <1.3  <90  on  WARM быстрый разогрев
+  off         off     <0.9  >90  on  HEAT подогрев
+  on          x       <1.3  x    on  STEAM пар
+  x           on      <1.3  x    on  FLOW пролив
+  -----------------------        off OFF  выкл. нагреватель
