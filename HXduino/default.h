@@ -21,8 +21,8 @@
 #define PBEEP    15 	//gpio15, beeper out
 #define PBOILER  A0     //adc,   pressude analog
 #define LWATER	 2	    //gpio2, flow counter
-#define SSR_ON   LOW
-#define SSR_OFF  HIGH
+#define SSR_ON   HIGH
+#define SSR_OFF  LOW
 #define SDA      4
 #define SCL      5
 #define ON      LOW

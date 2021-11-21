@@ -17,7 +17,7 @@ ESP8266Timer Timer1;
 float Te=-99.9;
 float Pb=0;//Pboiler Bar
 float Lw=0;//Lwater mL
-volatile char halfsec=0;//seconds counter
+volatile unsigned int halfsec=0;//seconds counter
 volatile unsigned int uptime=0;//uptime in sec
 volatile unsigned int loopcnt=0;//loop in sec/5
 volatile unsigned int pump=0;//pump status
@@ -43,13 +43,14 @@ void setup(){
     pinMode (PRESS_ON, INPUT_PULLUP);
 //-----
     ver();
-//    beeper(500,1);
-//-----
+    beeper(500,1);
     delay(500);
+//-----
     char rst=system_get_rst_info()->reason;
     if(rst>0 && rst<6){//error rst
         disp_rst(rst);
-        while(1)yield();
+//        while(1)yield();
+        delay(500);
     }
 
     if(!digitalRead(PRESS_ON)){//ota mode
@@ -80,11 +81,14 @@ void loop(){
   	}
   	Lw=flow2ml(flow);
     if(pump){//pump on
-  		if(halfsec==0)flow=0;
-        disp_flow();
+  		if(halfsec==0){
+  		  flow=0;
+  		}
+      disp_flow();
     }else{
   		halfsec=0;
-        disp_heat();
+      flow=0;
+      disp_heat();
     }
     pump=0;
 //-----
@@ -110,16 +114,19 @@ void IRAM_ATTR TimingISR(){
     static char spump=1;
     static char sflow=1;
 
-    if(loopcnt++>40*8){//error - 8s
+    if(loopcnt++>(40*8)){//error - 8s
       digitalWrite(SSR_PIN, SSR_OFF);
-    }  
+    }
     if(hcnt--<=0){//1sec
+//    Serial.println(loopcnt);  
     	hcnt=TBLINK;
-        uptime++;
-        if(pump){
-          if(++halfsec>99)halfsec=0;
+      uptime++;
+      if(pump){
+        if(++halfsec>999){
+          halfsec=0;
         }
       }
+    }
     
     if(digitalRead(PUMP_ON)==LOW){//flow on
     	if(spump==1){//только 1 за период

@@ -61,6 +61,7 @@ void disp_state(){
             strcpy_P(str, PSTR("ERR")); 
     }
     disp.drawString(30,25, str);
+    disp.drawStringf(94, 25, str,"%d>%d|%d>%d", st, digitalRead(SSR_PIN), pump, halfsec);
 }
 
 void printT(int p){//temp
@@ -86,13 +87,13 @@ void printP(float p){//pressure
 void curtime(int p){//uptime
     disp.setTextAlignment(TEXT_ALIGN_LEFT);
     disp.setFont(ArialMT_Plain_16);
-    disp.drawStringf( 3, 5, str, "t%3d", p/60);
+    disp.drawStringf( 3, 5, str, "t%3d", p);///60);
 }
 
 void printF(int p){//flow
     disp.setTextAlignment(TEXT_ALIGN_RIGHT);
     disp.setFont(ArialMT_Plain_24);
-    disp.drawStringf(126, 41, str, "%3d", (int)p);
+    disp.drawStringf(126, 35, str, "L:%3d", (int)p);
 }
 
 void hb(){//heatbead
@@ -164,6 +165,8 @@ void disp_heat(){
 }
 
 void disp_rst(char rst){
+    Serial.print("Error: ");
+    Serial.println(rst, DEC);
     disp.clear();
     disp.setTextAlignment(TEXT_ALIGN_CENTER);
     disp.setFont(ArialMT_Plain_16);
